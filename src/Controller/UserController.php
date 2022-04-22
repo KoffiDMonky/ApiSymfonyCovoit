@@ -16,12 +16,11 @@ class UserController extends AbstractController
      * name="insertUser",requirements={"nom"="[a-z]{4,30}"})    
      */
 
-    public function insert(Request $request, $username, $password, $apiToken)
+    public function insert(Request $request, $username, $password)
     {
         $u = new User();
         $u->setUsername($username);
         $u->getPassword($password);
-        $u->setUsername($username);
 
         if ($request->isMethod('get')) { //récupération de l'entityManager pour insérer les données en bdd
             $em = $this->getDoctrine()->getManager();
@@ -47,7 +46,7 @@ class UserController extends AbstractController
         $listeUsers = $userRepository->findAll();
         $resultat = [];
         foreach ($listeUsers as $u) {
-            array_push($resultat, $u->getNom());
+            array_push($resultat, $u->getUserName());
         }
         $reponse = new JsonResponse($resultat);
 

@@ -49,7 +49,7 @@ class TrajetController extends AbstractController
         $listeTrajets = $trajetRepository->findAll();
         $resultat = [];
         foreach ($listeTrajets as $traj) {
-            array_push($resultat, $traj->getPersonne(), $traj->getVilleDep(), $traj->getVilleArr(), $traj->getNbKms(), $traj->getDateTrajet());
+            array_push($resultat, $traj->getPersonne(), $traj->getVilleDep()->getNom(), $traj->getVilleArr()->getNom(), $traj->getNbKms(), $traj->getDateTrajet());
         }
         $reponse = new JsonResponse($resultat);
 

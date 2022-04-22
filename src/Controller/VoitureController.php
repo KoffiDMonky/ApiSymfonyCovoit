@@ -48,7 +48,7 @@ class VoitureController extends AbstractController
         $listeVoitures = $VoitureRepository->findAll();
         $resultat = [];
         foreach ($listeVoitures as $voit) {
-            array_push($resultat, $voit->getMarque(),$voit->getNbPlaces(),$voit->getModele());
+            array_push($resultat, $voit->getMarque()->getNom(),$voit->getModele(),$voit->getNbPlaces());
         }
         $reponse = new JsonResponse($resultat);
 

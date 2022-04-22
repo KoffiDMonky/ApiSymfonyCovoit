@@ -52,7 +52,7 @@ class ListePersonneController extends AbstractController
         $listePersonnes = $personneRepository->findAll();
         $resultat = [];
         foreach ($listePersonnes as $pers) {
-            array_push($resultat, $pers->getNom(), $pers->getPrenom(), $pers->getDateNaiss(), $pers->getVille(), $pers->getTel(), $pers->getEmail(), $pers->getVoiture(), $pers->getTrajets(), $pers->getUser() );
+            array_push($resultat, $pers->getNom(), $pers->getPrenom(), $pers->getDateNaiss(), $pers->getVille(), $pers->getTel(), $pers->getEmail(), $pers->getVoiture(),$pers->getUser());
         }
         $reponse = new JsonResponse($resultat);
 
