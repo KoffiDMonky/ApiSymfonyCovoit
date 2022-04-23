@@ -36,24 +36,24 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/liste, roles: ROLE_ADMIN }
-         - { path: ^/insertMarque, roles: ROLE_USER }
+         - { path: ^/marque/ajout, roles: ROLE_USER }
          - { path: ^/marque, roles: ROLE_ADMIN }
-         - { path: ^/deleteMarque, roles: ROLE_USER }
-         - { path: ^/insertPersonne, roles: ROLE_USER }
+         - { path: ^/marque/suppr, roles: ROLE_USER }
+         - { path: ^/personne/ajout, roles: ROLE_USER }
          - { path: ^/personne, roles: ROLE_ADMIN }
-         - { path: ^/deletePersonne, roles: ROLE_USER }
-         - { path: ^/insertTrajet, roles: ROLE_USER }
+         - { path: ^/marque/suppr, roles: ROLE_USER }
+         - { path: ^/trajet/ajout, roles: ROLE_USER }
          - { path: ^/trajet, roles: ROLE_ADMIN }
-         - { path: ^/deleteTrajet, roles: ROLE_USER }
-         - { path: ^/insertUser, roles: ROLE_USER }
-         - { path: ^/User, roles: ROLE_ADMIN }
-         - { path: ^/deleteUser, roles: ROLE_USER }
-         - { path: ^/insertVille, roles: ROLE_USER }
+         - { path: ^/trajet/suppr, roles: ROLE_USER }
+         - { path: ^/user/ajout, roles: ROLE_USER }
+         - { path: ^/user, roles: ROLE_ADMIN }
+         - { path: ^/user/suppr, roles: ROLE_USER }
+         - { path: ^/ville/ajout, roles: ROLE_USER }
          - { path: ^/ville, roles: ROLE_ADMIN }
-         - { path: ^/deleteVille, roles: ROLE_USER }
-         - { path: ^/insertVoiture, roles: ROLE_USER }
+         - { path: ^/ville/suppr, roles: ROLE_USER }
+         - { path: ^/voiture/ajout, roles: ROLE_USER }
          - { path: ^/voiture, roles: ROLE_ADMIN }
-         - { path: ^/deleteVoiture, roles: ROLE_USER }
+         - { path: ^/voiture/suppr, roles: ROLE_USER }
 
 when@test:
     security:

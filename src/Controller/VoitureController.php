@@ -8,33 +8,41 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Voiture;
+use App\Entity\Marque;
+use App\Repository\MarqueRepository;
 
 class VoitureController extends AbstractController
 {
     /**
-     * @Route("/insertVoiture/{marque}/{nb_places}/{modele}", 
-     * name="insertVoiture",requirements={"marque"="[a-z]{4,30}","nb_places"="[a-z]{4,30}","modele"="[a-z]{4,30}"})    
+     * @Route("/voiture/ajout", name="ajout",methods={"POST"})    
      */
 
-    public function insert(Request $request, $marque, $nb_places, $modele )
+    public function ajoutVoiture(Request $request)
     {
-        $voit = new Voiture();
-        $voit->setMarque($marque);
-        $voit->setNbPlaces($nb_places);
-        $voit->setModele($modele);
-        
+        if ($request->isMethod('post')) {
+            // On instancie une nouvelle voiture
+            $voiture = new Voiture();
 
-        if ($request->isMethod('get')) { //récupération de l'entityManager pour insérer les données en bdd
-            $em = $this->getDoctrine()->getManager();
+            // On décode les données envoyées
+            $donnees = json_decode($request->getContent());
 
-            $em->persist($voit); //insertion en bdd
-            $em->flush();
-            $resultat = ["ok"];
-        } else {
-            $resultat = ["nok"];
+            // On hydrate l'objet
+            $marque = $this->getDoctrine()->getRepository(Marque::class)->find($donnees->marque_id);
+            $voiture->setMarque($marque);
+            $voiture->setNbPlaces($donnees->nbPlaces);
+            $voiture->setModele($donnees->modele);
+
+            // On sauvegarde en bdd
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($marque);
+            $entityManager->flush();
+
+            // On retourne la confirmation
+            return new Response('ok', 201);
+        } else{
+            return new Response('Failed', 404);
         }
-        $reponse = new JsonResponse($resultat);
-        return $reponse;
+
     }
 
     /**
@@ -48,7 +56,7 @@ class VoitureController extends AbstractController
         $listeVoitures = $VoitureRepository->findAll();
         $resultat = [];
         foreach ($listeVoitures as $voit) {
-            array_push($resultat, $voit->getMarque()->getNom(),$voit->getModele(),$voit->getNbPlaces());
+            array_push($resultat,$voit->getMarque()->getNom(),$voit->getModele(),$voit->getNbPlaces());
         }
         $reponse = new JsonResponse($resultat);
 

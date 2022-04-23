@@ -13,26 +13,32 @@ class MarqueController extends AbstractController
 {
 
     /**
-     * @Route("/insertMarque/{nom}", 
-     * name="insertMarque",requirements={"nom"="[a-z]{4,30}"})    
+     * @Route("/marque/ajout", name="ajoutMarque",methods={"POST"})    
      */
 
-    public function insert(Request $request, $nom)
+    public function ajoutMarque(Request $request)
     {
-        $marq = new Marque();
-        $marq->setNom($nom);
+        if ($request->isMethod('post')) {
+            // On instancie une nouvelle marque
+            $marque = new Marque();
 
-        if ($request->isMethod('get')) { //récupération de l'entityManager pour insérer les données en bdd
-            $em = $this->getDoctrine()->getManager();
+            // On décode les données envoyées
+            $donnees = json_decode($request->getContent());
 
-            $em->persist($marq); //insertion en bdd
-            $em->flush();
-            $resultat = ["ok"];
-        } else {
-            $resultat = ["nok"];
+            // On hydrate l'objet
+            $marque->setNom($donnees->nom);
+
+            // On sauvegarde en bdd
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($marque);
+            $entityManager->flush();
+
+            // On retourne la confirmation
+            return new Response('ok', 201);
+        } else{
+            return new Response('Failed', 404);
         }
-        $reponse = new JsonResponse($resultat);
-        return $reponse;
+
     }
 
     /**
