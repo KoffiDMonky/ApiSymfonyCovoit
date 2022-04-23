@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Personne;
 use App\Entity\User;
+use App\Entity\Ville;
+use App\Entity\Voiture;
 
 class PersonneController extends AbstractController
 {

@@ -7,37 +7,47 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use App\Entity\User;
 
 class UserController extends AbstractController
 {
     /**
-     * @Route("/insertUser/{nom}", 
-     * name="insertUser",requirements={"nom"="[a-z]{4,30}"})    
+     * @Route("/user/ajout", name="ajoutUser
+     *",methods={"POST"})    
      */
 
-    public function insert(Request $request, $username, $password)
+    public function ajoutUser(Request $request, UserPasswordEncoderInterface $encoder)
     {
-        $u = new User();
-        $u->setUsername($username);
-        $u->getPassword($password);
+        if ($request->isMethod('post')) {
+            // On instancie un nouveau user
+            $user = new User();
 
-        if ($request->isMethod('get')) { //récupération de l'entityManager pour insérer les données en bdd
-            $em = $this->getDoctrine()->getManager();
+            // On décode les données envoyées
+            $donnees = json_decode($request->getContent());
 
-            $em->persist($u); //insertion en bdd
-            $em->flush();
-            $resultat = ["ok"];
+            // On hydrate l'objet
+            $user->setUsername($donnees->username);
+            $user->setRoles($donnees->role);
+            $user->setPassword($encoder->encodePassword($user,$donnees->password));
+            $user->setApiToken($donnees->apiToken);
+
+            // On sauvegarde en bdd
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            // On retourne la confirmation
+            return new Response('ok', 201);
         } else {
-            $resultat = ["nok"];
+            return new Response('Failed', 404);
         }
-        $reponse = new JsonResponse($resultat);
-        return $reponse;
     }
 
     /**
      * @Route("/user", name="user")
      */
+
     public function user(Request $request)
     { //recuperation du repository grace au manager
         $em = $this->getDoctrine()->getManager();

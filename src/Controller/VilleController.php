@@ -12,27 +12,33 @@ use App\Entity\Ville;
 class VilleController extends AbstractController
 {
     /**
-     * @Route("/insertVille/{nom}/{codepostal}", 
-     * name="insertVille",requirements={"nom"="[a-z]{4,30}","codepostal"="[a-z]{4,30}"})    
+     * @Route("/ville/ajout", name="ajoutVille",methods={"POST"})    
      */
 
-    public function insert(Request $request, $nom, $codepostal)
+    public function ajoutVille(Request $request)
     {
-        $vil = new Ville();
-        $vil->setNom($nom);
-        $vil->setCodepostal($codepostal);
+        if ($request->isMethod('post')) {
+            // On instancie une nouvelle marque
+            $ville = new Ville();
 
-        if ($request->isMethod('get')) { //récupération de l'entityManager pour insérer les données en bdd
-            $em = $this->getDoctrine()->getManager();
+            // On décode les données envoyées
+            $donnees = json_decode($request->getContent());
 
-            $em->persist($vil); //insertion en bdd
-            $em->flush();
-            $resultat = ["ok"];
-        } else {
-            $resultat = ["nok"];
+            // On hydrate l'objet
+            $ville->setNom($donnees->nom);
+            $ville->setCodepostal($donnees->codepostal);
+
+            // On sauvegarde en bdd
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($ville);
+            $entityManager->flush();
+
+            // On retourne la confirmation
+            return new Response('ok', 201);
+        } else{
+            return new Response('Failed', 404);
         }
-        $reponse = new JsonResponse($resultat);
-        return $reponse;
+
     }
 
     /**

@@ -8,34 +8,44 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Trajet;
+use App\Entity\Ville;
+use DateTime;
 
 class TrajetController extends AbstractController
 {
     /**
-     * @Route("/insertTrajet/{personne}/{ville_dep}/{ville_arr}/{nbKms}/{DateTrajet}", 
-     * name="insertTrajet")    
+     * @Route("/trajet/ajout", name="ajoutTrajet
+     *",methods={"POST"})    
      */
 
-    public function insert(Request $request, $personne, $ville_dep, $ville_arr, $nbKms, $DateTrajet)
+    public function ajoutTrajet(Request $request)
     {
-        $traj = new Trajet();
-        $traj->addPersonne($personne);
-        $traj->setVilleDep($ville_dep);
-        $traj->setVilleArr($ville_arr);
-        $traj->setNbKms($nbKms);
-        $traj->setDateTrajet($DateTrajet);
+        if ($request->isMethod('post')) {
+            // On instancie une nouvelle marque
+            $trajet = new Trajet();
 
-        if ($request->isMethod('get')) { //récupération de l'entityManager pour insérer les données en bdd
-            $em = $this->getDoctrine()->getManager();
+            // On décode les données envoyées
+            $donnees = json_decode($request->getContent());
 
-            $em->persist($traj); //insertion en bdd
-            $em->flush();
-            $resultat = ["ok"];
-        } else {
-            $resultat = ["nok"];
+            // On hydrate l'objet
+            $villeDep = $this->getDoctrine()->getRepository(Ville::class)->find($donnees->ville_dep_id);
+            $trajet->setVilleDep($villeDep);
+            $villeArr = $this->getDoctrine()->getRepository(Ville::class)->find($donnees->ville_arr_id);
+            $trajet->setVilleArr($villeArr);
+            $trajet->setNbKms($donnees->NbKms);
+            $date = new DateTime(date('Y-m-d H:00:00'));
+            $trajet->setDateTrajet($date);
+
+            // On sauvegarde en bdd
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($trajet);
+            $entityManager->flush();
+
+            // On retourne la confirmation
+            return new Response('ok', 201);
+        } else{
+            return new Response('Failed', 404);
         }
-        $reponse = new JsonResponse($resultat);
-        return $reponse;
     }
 
     /**
