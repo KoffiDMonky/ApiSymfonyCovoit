@@ -27,7 +27,7 @@ class LoadUserData extends Fixture implements FixtureGroupInterface
     {
        
      
-        $users=[['username'=>'admin','password'=>'adminpass','apitoken'=>'100972','roles'=>['ROLE_ADMIN']]]; 
+        $users=[['username'=>'admin','password'=>'adminpass','apitoken'=>'100972','roles'=>['ROLE_ADMIN']],['username'=>'user','password'=>'userpass','apitoken'=>'108972','roles'=>['ROLE_USER']]]; 
 
         foreach($users as $key=> $user){
             $objUser = new User;

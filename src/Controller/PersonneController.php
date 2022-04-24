@@ -66,7 +66,7 @@ class PersonneController extends AbstractController
         $listePersonnes = $personneRepository->findAll();
         $resultat = [];
         foreach ($listePersonnes as $pers) {
-            array_push($resultat, ["id"=>$pers->getId(),"nom"=>$pers->getNom(), "prenom"=>$pers->getPrenom(), "date de naissance"=>$pers->getDateNaiss(), "ville"=>$pers->getVille(), "telephone"=>$pers->getTel(), "email"=>$pers->getEmail(), "voiture"=>$pers->getVoiture()]);
+            array_push($resultat, ["id"=>$pers->getId(),"nom"=>$pers->getNom(), "prenom"=>$pers->getPrenom(), "date de naissance"=>$pers->getDateNaiss(), "ville"=>$pers->getVille()->getNom(), "telephone"=>$pers->getTel(), "email"=>$pers->getEmail(), "voiture"=>["marque"=>$pers->getVoiture()->getMarque()->getNom(),"modele"=>$pers->getVoiture()->getModele()], "user"=>["id"=>$pers->getUser()->getId(),"username"=>$pers->getUser()->getUsername()]]);
         }
         $reponse = new JsonResponse($resultat);
 
