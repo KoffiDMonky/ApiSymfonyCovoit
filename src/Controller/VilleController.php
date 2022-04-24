@@ -52,7 +52,7 @@ class VilleController extends AbstractController
         $listeVilles = $villeRepository->findAll();
         $resultat = [];
         foreach ($listeVilles as $vil) {
-            array_push($resultat, $vil->getNom(), $vil->getCodepostal());
+            array_push($resultat, ["id"=>$vil->getId(),"nom"=>$vil->getNom(),"codepostal"=>$vil->getCodepostal()]);
         }
         $reponse = new JsonResponse($resultat);
 
@@ -62,7 +62,7 @@ class VilleController extends AbstractController
 
 
     /**
-     * @Route("/deleteVille/{id}", 
+     * @Route("/ville/suppr/{id}", 
      * name="deleteVille",requirements={"id"="[0-9]{1,5}"})    
      */
 

@@ -59,7 +59,7 @@ class TrajetController extends AbstractController
         $listeTrajets = $trajetRepository->findAll();
         $resultat = [];
         foreach ($listeTrajets as $traj) {
-            array_push($resultat, $traj->getPersonne(), $traj->getVilleDep()->getNom(), $traj->getVilleArr()->getNom(), $traj->getNbKms(), $traj->getDateTrajet());
+            array_push($resultat, ["id"=>$traj->getId(),"personne"=>$traj->getPersonne(), "ville de départ"=>$traj->getVilleDep()->getNom(), "ville d'arrivée"=>$traj->getVilleArr()->getNom(), "Distance"=>$traj->getNbKms(), "Date du trajet"=>$traj->getDateTrajet()]);
         }
         $reponse = new JsonResponse($resultat);
 
@@ -68,7 +68,7 @@ class TrajetController extends AbstractController
     }
 
         /**
-     * @Route("/deleteTrajet/{id}", 
+     * @Route("/trajet/suppr/{id}", 
      * name="deleteTrajet",requirements={"id"="[0-9]{1,5}"})    
      */
 

@@ -56,7 +56,7 @@ class VoitureController extends AbstractController
         $listeVoitures = $VoitureRepository->findAll();
         $resultat = [];
         foreach ($listeVoitures as $voit) {
-            array_push($resultat,$voit->getMarque()->getNom(),$voit->getModele(),$voit->getNbPlaces());
+            array_push($resultat,["id"=>$voit->getId(),"marque"=>$voit->getMarque()->getNom(),"modele"=>$voit->getModele(),"Nombre de place"=>$voit->getNbPlaces()]);
         }
         $reponse = new JsonResponse($resultat);
 
@@ -66,7 +66,7 @@ class VoitureController extends AbstractController
 
 
     /**
-     * @Route("/deleteVoiture/{id}", 
+     * @Route("/voiture/suppr/{id}", 
      * name="deleteVoiture",requirements={"id"="[0-9]{1,5}"})    
      */
 

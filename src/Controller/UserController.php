@@ -56,7 +56,7 @@ class UserController extends AbstractController
         $listeUsers = $userRepository->findAll();
         $resultat = [];
         foreach ($listeUsers as $u) {
-            array_push($resultat, $u->getUserName());
+            array_push($resultat, ["id"=>$u->getId(),"username"=>$u->getUserName(),"apiToken"=>$u->getApiToken()]);
         }
         $reponse = new JsonResponse($resultat);
 
@@ -66,7 +66,7 @@ class UserController extends AbstractController
 
 
     /**
-     * @Route("/deleteUser/{id}", 
+     * @Route("/user/suppr/{id}", 
      * name="deleteUser",requirements={"id"="[0-9]{1,5}"})    
      */
 

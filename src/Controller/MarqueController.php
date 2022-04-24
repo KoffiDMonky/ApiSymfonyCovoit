@@ -48,11 +48,12 @@ class MarqueController extends AbstractController
     { //recuperation du repository grace au manager
         $em = $this->getDoctrine()->getManager();
         $marqueRepository = $em->getRepository(Marque::class);
+
         //personneRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
         $listeMarques = $marqueRepository->findAll();
         $resultat = [];
         foreach ($listeMarques as $marq) {
-            array_push($resultat, $marq->getNom());
+            array_push($resultat, ["id"=>$marq->getId(),"nom"=>$marq->getNom()]);
         }
         $reponse = new JsonResponse($resultat);
 
@@ -62,7 +63,7 @@ class MarqueController extends AbstractController
 
 
     /**
-     * @Route("/deleteMarque/{id}", 
+     * @Route("/marque/suppr/{id}", 
      * name="deleteMarque",requirements={"id"="[0-9]{1,5}"})    
      */
 

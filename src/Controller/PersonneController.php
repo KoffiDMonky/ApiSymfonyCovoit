@@ -66,7 +66,7 @@ class PersonneController extends AbstractController
         $listePersonnes = $personneRepository->findAll();
         $resultat = [];
         foreach ($listePersonnes as $pers) {
-            array_push($resultat, $pers->getNom(), $pers->getPrenom(), $pers->getDateNaiss(), $pers->getVille(), $pers->getTel(), $pers->getEmail(), $pers->getVoiture(), $pers->getUser());
+            array_push($resultat, ["id"=>$pers->getId(),"nom"=>$pers->getNom(), "prenom"=>$pers->getPrenom(), "date de naissance"=>$pers->getDateNaiss(), "ville"=>$pers->getVille(), "telephone"=>$pers->getTel(), "email"=>$pers->getEmail(), "voiture"=>$pers->getVoiture()]);
         }
         $reponse = new JsonResponse($resultat);
 
@@ -75,7 +75,7 @@ class PersonneController extends AbstractController
     }
 
     /**
-     * @Route("/deletePersonne/{id}", 
+     * @Route("/personne/suppr/{id}", 
      * name="deletePersonne",requirements={"id"="[0-9]{1,5}"})    
      */
 
