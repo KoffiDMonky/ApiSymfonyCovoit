@@ -45,20 +45,26 @@ class MarqueController extends AbstractController
      * @Route("/marque", name="marque")
      */
     public function marque(Request $request)
-    { //recuperation du repository grace au manager
-        $em = $this->getDoctrine()->getManager();
-        $marqueRepository = $em->getRepository(Marque::class);
+    { 
+        if ($request->isMethod('get')) {
 
-        //personneRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
-        $listeMarques = $marqueRepository->findAll();
-        $resultat = [];
-        foreach ($listeMarques as $marq) {
-            array_push($resultat, ["id"=>$marq->getId(),"nom"=>$marq->getNom()]);
+            //recuperation du repository grace au manager
+            $em = $this->getDoctrine()->getManager();
+            $marqueRepository = $em->getRepository(Marque::class);
+    
+            //personneRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
+            $listeMarques = $marqueRepository->findAll();
+            $resultat = [];
+            foreach ($listeMarques as $marq) {
+                array_push($resultat, ["id"=>$marq->getId(),"nom"=>$marq->getNom()]);
+            }
+            $reponse = new JsonResponse($resultat);
+    
+            return $reponse;
+
+        } else {
+            return new Response('Failed', 404);
         }
-        $reponse = new JsonResponse($resultat);
-
-
-        return $reponse;
     }
 
 
@@ -69,16 +75,22 @@ class MarqueController extends AbstractController
 
     public function delete(Request $request, $id)
     {
-        //récupération du Manager  et du repository pour accéder à la bdd
-        $em = $this->getDoctrine()->getManager();
-        $marqueRepository = $em->getRepository(Marque::class);
-        //requete de selection
-        $marq = $marqueRepository->find($id);
-        //suppression de l'entity
-        $em->remove($marq);
-        $em->flush();
-        $resultat = ["ok"];
-        $reponse = new JsonResponse($resultat);
-        return $reponse;
+
+        if ($request->isMethod('delete')){
+
+            //récupération du Manager  et du repository pour accéder à la bdd
+            $em = $this->getDoctrine()->getManager();
+            $marqueRepository = $em->getRepository(Marque::class);
+            //requete de selection
+            $marq = $marqueRepository->find($id);
+            //suppression de l'entity
+            $em->remove($marq);
+            $em->flush();
+            $resultat = ["ok"];
+            $reponse = new JsonResponse($resultat);
+            return $reponse;
+        }  else {
+            return new Response('Failed', 404);
+        }
     }
 }

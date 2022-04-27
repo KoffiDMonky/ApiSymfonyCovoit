@@ -29,7 +29,7 @@ class UserController extends AbstractController
             // On hydrate l'objet
             $user->setUsername($donnees->username);
             $user->setRoles($donnees->role);
-            $user->setPassword($encoder->encodePassword($user,$donnees->password));
+            $user->setPassword($encoder->encodePassword($user, $donnees->password));
             $user->setApiToken($donnees->apiToken);
 
             // On sauvegarde en bdd
@@ -49,19 +49,24 @@ class UserController extends AbstractController
      */
 
     public function user(Request $request)
-    { //recuperation du repository grace au manager
-        $em = $this->getDoctrine()->getManager();
-        $userRepository = $em->getRepository(User::class);
-        //personneRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
-        $listeUsers = $userRepository->findAll();
-        $resultat = [];
-        foreach ($listeUsers as $u) {
-            array_push($resultat, ["id"=>$u->getId(),"username"=>$u->getUserName(),"apiToken"=>$u->getApiToken()]);
+    {
+        if ($request->isMethod('get')) {
+            //recuperation du repository grace au manager
+            $em = $this->getDoctrine()->getManager();
+            $userRepository = $em->getRepository(User::class);
+            //personneRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
+            $listeUsers = $userRepository->findAll();
+            $resultat = [];
+            foreach ($listeUsers as $u) {
+                array_push($resultat, ["id" => $u->getId(), "username" => $u->getUserName(), "apiToken" => $u->getApiToken()]);
+            }
+            $reponse = new JsonResponse($resultat);
+
+
+            return $reponse;
+        } else {
+            return new Response('Failed', 404);
         }
-        $reponse = new JsonResponse($resultat);
-
-
-        return $reponse;
     }
 
 
@@ -72,16 +77,77 @@ class UserController extends AbstractController
 
     public function delete(Request $request, $id)
     {
+        if ($request->isMethod('delete')) {
+
+            //récupération du Manager  et du repository pour accéder à la bdd
+            $em = $this->getDoctrine()->getManager();
+            $userRepository = $em->getRepository(User::class);
+            //requete de selection
+            $u = $userRepository->find($id);
+            //suppression de l'entity
+            $em->remove($u);
+            $em->flush();
+            $resultat = ["ok"];
+            $reponse = new JsonResponse($resultat);
+            return $reponse;
+        } else {
+            return new Response('Failed', 404);
+        }
+    }
+
+    /**
+     * @Route("/login", name="app_login")
+     */
+    public function login(string $username, string $password)
+    {
+        //TODO: login prend en argument un login et un mot de passe , puis retourne un token
+
         //récupération du Manager  et du repository pour accéder à la bdd
         $em = $this->getDoctrine()->getManager();
+
+        //récupération du user dans le repository
         $userRepository = $em->getRepository(User::class);
-        //requete de selection
-        $u = $userRepository->find($id);
-        //suppression de l'entity
-        $em->remove($u);
-        $em->flush();
-        $resultat = ["ok"];
-        $reponse = new JsonResponse($resultat);
-        return $reponse;
+        $user = $userRepository->findOneBy(['username' => $username]);
+
+        //récupération du mot de passe dans le repository
+        $passwordRepository = $em->getRepository(User::class);
+        $pwd = $passwordRepository->findOneBy(['password' => $password]);
+
+        //Si le user et le mot de passe sont égaux au login et mdp passé en argument, on récupère le token de l'utilisateur pour le retourner au front
+        if ($user === $username && $pwd === $password) {
+
+            $apiToken = $user->getApiToken();
+
+            return $this->em->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
+        }
+        return null;
+    }
+
+    /**
+     * @Route("/register", name="app_register")
+     */
+    public function register(string $username, string $password, UserPasswordEncoderInterface $passwordEncoder)
+    {
+        //TODO: register , enregistre un login et un mot de passe et retourne un token
+
+        //On instancie un user puis on set son username et mot de passe
+        $user = new User;
+        $user->setUsername($username);
+        $encodePassword = $passwordEncoder->encodePassword($user, $password);
+        $user->setPassword($encodePassword);
+
+        //On génère un token puis on le set 
+        $token = base_convert(hash('sha256', time() . mt_rand()), 16, 36);
+        $user->setApiToken($token);
+
+        // On sauvegarde en bdd
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        //On récupère le token enregistré précédemment pour le retourner au front
+        $apiToken = $user->getApiToken();
+
+        return $this->em->getRepository(User::class)->findOneBy(['apiToken' => $apiToken]);
     }
 }

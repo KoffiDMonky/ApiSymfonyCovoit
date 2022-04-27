@@ -49,19 +49,24 @@ class VoitureController extends AbstractController
      * @Route("/voiture", name="voiture")
      */
     public function Voiture(Request $request)
-    { //recuperation du repository grace au manager
-        $em = $this->getDoctrine()->getManager();
-        $VoitureRepository = $em->getRepository(Voiture::class);
-        //personneRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
-        $listeVoitures = $VoitureRepository->findAll();
-        $resultat = [];
-        foreach ($listeVoitures as $voit) {
-            array_push($resultat,["id"=>$voit->getId(),"marque"=>$voit->getMarque()->getNom(),"modele"=>$voit->getModele(),"Nombre de place"=>$voit->getNbPlaces()]);
+    { 
+        if ($request->isMethod('get')) {
+
+            //recuperation du repository grace au manager
+            $em = $this->getDoctrine()->getManager();
+            $VoitureRepository = $em->getRepository(Voiture::class);
+            //personneRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
+            $listeVoitures = $VoitureRepository->findAll();
+            $resultat = [];
+            foreach ($listeVoitures as $voit) {
+                array_push($resultat,["id"=>$voit->getId(),"marque"=>$voit->getMarque()->getNom(),"modele"=>$voit->getModele(),"Nombre de place"=>$voit->getNbPlaces()]);
+            }
+            $reponse = new JsonResponse($resultat);
+
+            return $reponse;
+        } else {
+            return new Response('Failed', 404);
         }
-        $reponse = new JsonResponse($resultat);
-
-
-        return $reponse;
     }
 
 
@@ -72,16 +77,22 @@ class VoitureController extends AbstractController
 
     public function delete(Request $request, $id)
     {
-        //récupération du Manager  et du repository pour accéder à la bdd
-        $em = $this->getDoctrine()->getManager();
-        $VoitureRepository = $em->getRepository(Voiture::class);
-        //requete de selection
-        $voit = $VoitureRepository->find($id);
-        //suppression de l'entity
-        $em->remove($voit);
-        $em->flush();
-        $resultat = ["ok"];
-        $reponse = new JsonResponse($resultat);
-        return $reponse;
+
+        if ($request->isMethod('delete')){
+
+            //récupération du Manager  et du repository pour accéder à la bdd
+            $em = $this->getDoctrine()->getManager();
+            $VoitureRepository = $em->getRepository(Voiture::class);
+            //requete de selection
+            $voit = $VoitureRepository->find($id);
+            //suppression de l'entity
+            $em->remove($voit);
+            $em->flush();
+            $resultat = ["ok"];
+            $reponse = new JsonResponse($resultat);
+            return $reponse;
+        } else {
+            return new Response('Failed', 404);
+        }
     }
 }

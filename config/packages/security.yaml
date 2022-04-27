@@ -54,6 +54,9 @@ security:
          - { path: ^/voiture/ajout, roles: ROLE_USER }
          - { path: ^/voiture, roles: ROLE_ADMIN }
          - { path: ^/voiture/suppr, roles: ROLE_USER }
+         - { path: ^/inscription/ajout, roles: ROLE_USER }
+         - { path: ^/inscription, roles: ROLE_ADMIN }
+         - { path: ^/inscription/suppr, roles: ROLE_USER }
 
 when@test:
     security:

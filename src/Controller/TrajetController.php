@@ -52,19 +52,24 @@ class TrajetController extends AbstractController
      * @Route("/trajet", name="trajet")
      */
     public function liste(Request $request)
-    { //recuperation du repository grace au manager
-        $em = $this->getDoctrine()->getManager();
-        $trajetRepository = $em->getRepository(Trajet::class);
-        //trajetRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
-        $listeTrajets = $trajetRepository->findAll();
-        $resultat = [];
-        foreach ($listeTrajets as $traj) {
-            array_push($resultat, ["id"=>$traj->getId(),"personne"=>$traj->getPersonne(), "ville de départ"=>$traj->getVilleDep()->getNom(), "ville d'arrivée"=>$traj->getVilleArr()->getNom(), "Distance"=>$traj->getNbKms(), "Date du trajet"=>$traj->getDateTrajet()]);
+    { 
+        if ($request->isMethod('get')) {
+
+            //recuperation du repository grace au manager
+            $em = $this->getDoctrine()->getManager();
+            $trajetRepository = $em->getRepository(Trajet::class);
+            //trajetRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
+            $listeTrajets = $trajetRepository->findAll();
+            $resultat = [];
+            foreach ($listeTrajets as $traj) {
+                array_push($resultat, ["id"=>$traj->getId(),"personne"=>$traj->getPersonne(), "ville de départ"=>$traj->getVilleDep()->getNom(), "ville d'arrivée"=>$traj->getVilleArr()->getNom(), "Distance"=>$traj->getNbKms(), "Date du trajet"=>$traj->getDateTrajet()]);
+            }
+            $reponse = new JsonResponse($resultat);
+    
+            return $reponse;
+        } else {
+            return new Response('Failed', 404);
         }
-        $reponse = new JsonResponse($resultat);
-
-
-        return $reponse;
     }
 
         /**
@@ -74,16 +79,21 @@ class TrajetController extends AbstractController
 
     public function delete(Request $request, $id)
     {
-        //récupération du Manager  et du repository pour accéder à la bdd
-        $em = $this->getDoctrine()->getManager();
-        $trajetRepository = $em->getRepository(Trajet::class);
-        //requete de selection
-        $traj = $trajetRepository->find($id);
-        //suppression de l'entity
-        $em->remove($traj);
-        $em->flush();
-        $resultat = ["ok"];
-        $reponse = new JsonResponse($resultat);
-        return $reponse;
+        if ($request->isMethod('delete')){
+
+            //récupération du Manager  et du repository pour accéder à la bdd
+            $em = $this->getDoctrine()->getManager();
+            $trajetRepository = $em->getRepository(Trajet::class);
+            //requete de selection
+            $traj = $trajetRepository->find($id);
+            //suppression de l'entity
+            $em->remove($traj);
+            $em->flush();
+            $resultat = ["ok"];
+            $reponse = new JsonResponse($resultat);
+            return $reponse;
+        } else {
+            return new Response('Failed', 404);
+        }
     }
 }

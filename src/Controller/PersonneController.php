@@ -59,19 +59,24 @@ class PersonneController extends AbstractController
      * @Route("/personne", name="personne")
      */
     public function liste(Request $request)
-    { //recuperation du repository grace au manager
-        $em = $this->getDoctrine()->getManager();
-        $personneRepository = $em->getRepository(Personne::class);
-        //personneRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
-        $listePersonnes = $personneRepository->findAll();
-        $resultat = [];
-        foreach ($listePersonnes as $pers) {
-            array_push($resultat, ["id"=>$pers->getId(),"nom"=>$pers->getNom(), "prenom"=>$pers->getPrenom(), "date de naissance"=>$pers->getDateNaiss(), "ville"=>$pers->getVille()->getNom(), "telephone"=>$pers->getTel(), "email"=>$pers->getEmail(), "voiture"=>["marque"=>$pers->getVoiture()->getMarque()->getNom(),"modele"=>$pers->getVoiture()->getModele()], "user"=>["id"=>$pers->getUser()->getId(),"username"=>$pers->getUser()->getUsername()]]);
+    { 
+        if ($request->isMethod('get')) {
+            //recuperation du repository grace au manager
+            $em = $this->getDoctrine()->getManager();
+            $personneRepository = $em->getRepository(Personne::class);
+            //personneRepository herite de servciceEntityRepository ayant les methodes pour recuperer les données de la bdd
+            $listePersonnes = $personneRepository->findAll();
+            $resultat = [];
+            foreach ($listePersonnes as $pers) {
+                array_push($resultat, ["id"=>$pers->getId(),"nom"=>$pers->getNom(), "prenom"=>$pers->getPrenom(), "date de naissance"=>$pers->getDateNaiss(), "ville"=>$pers->getVille()->getNom(), "telephone"=>$pers->getTel(), "email"=>$pers->getEmail(), "voiture"=>["marque"=>$pers->getVoiture()->getMarque()->getNom(),"modele"=>$pers->getVoiture()->getModele()], "user"=>["id"=>$pers->getUser()->getId(),"username"=>$pers->getUser()->getUsername()]]);
+            }
+            $reponse = new JsonResponse($resultat);
+    
+    
+            return $reponse;
+        } else {
+            return new Response('Failed', 404);
         }
-        $reponse = new JsonResponse($resultat);
-
-
-        return $reponse;
     }
 
     /**
@@ -81,16 +86,21 @@ class PersonneController extends AbstractController
 
     public function delete(Request $request, $id)
     {
-        //récupération du Manager  et du repository pour accéder à la bdd
-        $em = $this->getDoctrine()->getManager();
-        $personneRepository = $em->getRepository(Personne::class);
-        //requete de selection
-        $pers = $personneRepository->find($id);
-        //suppression de l'entity
-        $em->remove($pers);
-        $em->flush();
-        $resultat = ["ok"];
-        $reponse = new JsonResponse($resultat);
-        return $reponse;
+
+        if ($request->isMethod('delete')){
+            //récupération du Manager  et du repository pour accéder à la bdd
+            $em = $this->getDoctrine()->getManager();
+            $personneRepository = $em->getRepository(Personne::class);
+            //requete de selection
+            $pers = $personneRepository->find($id);
+            //suppression de l'entity
+            $em->remove($pers);
+            $em->flush();
+            $resultat = ["ok"];
+            $reponse = new JsonResponse($resultat);
+            return $reponse;
+        } else {
+            return new Response('Failed', 404);
+        }
     }
 }

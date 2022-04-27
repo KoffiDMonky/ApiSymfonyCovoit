@@ -47,9 +47,15 @@ class Trajet
      */
     private $DateTrajet;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Inscription::class, mappedBy="Trajet")
+     */
+    private $inscriptions;
+
     public function __construct()
     {
         $this->personne = new ArrayCollection();
+        $this->inscriptions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -125,6 +131,36 @@ class Trajet
     public function setDateTrajet(?\DateTimeInterface $DateTrajet): self
     {
         $this->DateTrajet = $DateTrajet;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Inscription[]
+     */
+    public function getInscriptions(): Collection
+    {
+        return $this->inscriptions;
+    }
+
+    public function addInscription(Inscription $inscription): self
+    {
+        if (!$this->inscriptions->contains($inscription)) {
+            $this->inscriptions[] = $inscription;
+            $inscription->setTrajet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInscription(Inscription $inscription): self
+    {
+        if ($this->inscriptions->removeElement($inscription)) {
+            // set the owning side to null (unless already changed)
+            if ($inscription->getTrajet() === $this) {
+                $inscription->setTrajet(null);
+            }
+        }
 
         return $this;
     }

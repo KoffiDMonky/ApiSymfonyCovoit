@@ -67,9 +67,15 @@ class Personne
      */
     private $user;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Inscription::class, mappedBy="Personne")
+     */
+    private $inscriptions;
+
     public function __construct()
     {
         $this->trajets = new ArrayCollection();
+        $this->inscriptions = new ArrayCollection();
     }
 
    
@@ -197,6 +203,36 @@ class Personne
     public function setUser(?user $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Inscription[]
+     */
+    public function getInscriptions(): Collection
+    {
+        return $this->inscriptions;
+    }
+
+    public function addInscription(Inscription $inscription): self
+    {
+        if (!$this->inscriptions->contains($inscription)) {
+            $this->inscriptions[] = $inscription;
+            $inscription->setPersonne($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInscription(Inscription $inscription): self
+    {
+        if ($this->inscriptions->removeElement($inscription)) {
+            // set the owning side to null (unless already changed)
+            if ($inscription->getPersonne() === $this) {
+                $inscription->setPersonne(null);
+            }
+        }
 
         return $this;
     }
