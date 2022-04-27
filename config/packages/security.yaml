@@ -46,7 +46,7 @@ security:
          - { path: ^/trajet, roles: ROLE_ADMIN }
          - { path: ^/trajet/suppr, roles: ROLE_USER }
          - { path: ^/user/ajout, roles: ROLE_USER }
-         - { path: ^/user, roles: ROLE_ADMIN }
+         - { path: ^/users, roles: ROLE_ADMIN }
          - { path: ^/user/suppr, roles: ROLE_USER }
          - { path: ^/ville/ajout, roles: ROLE_USER }
          - { path: ^/ville, roles: ROLE_ADMIN }
